@@ -1,1 +1,1 @@
-worker: hq.py
+worker: python hq.py
