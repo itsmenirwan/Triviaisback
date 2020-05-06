@@ -4,8 +4,8 @@ import discord
 import random
 import asyncio
 
-bot_channel_id = discord.Object(id='557440175731507200')
-oot_channel_id_list = ["557440175731507200","513818250652680213","557439769106448406","557439871447203857","557439829218951168","557439964179333121","525131707410677761","535628205139296256","459842150323060736"]
+bot_channel_id = discord.Object(id='706698023186464858')
+oot_channel_id_list = ["706698023186464858","513818250652680213","557439769106448406","557439871447203857","557439829218951168","557439964179333121","525131707410677761","535628205139296256","459842150323060736"]
 
 sent_new_message = False
 answer_scores = {
@@ -55,7 +55,7 @@ async def on_message(message):
     if message.server == None:
         return
     if message.content.lower() == "-r":
-       if "553981870933540866" in [role.id for role in message.author.roles]:
+       if "706699378538053643" in [role.id for role in message.author.roles]:
            sent_new_message =False
            answer_scores = {
                 "1": 0, 
