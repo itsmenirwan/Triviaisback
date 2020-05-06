@@ -50,8 +50,8 @@ async def on_message(message):
     if message.server == None:
         return
 
-    if message.content.lower() == "-hq":
-        if "565445948973514762" in [role.id for role in message.author.roles]:
+    if message.content.lower() == "r":
+        if "706699378538053643" in [role.id for role in message.author.roles]:
             
             sent_new_message = False
             answer_scores = {
