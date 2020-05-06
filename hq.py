@@ -55,7 +55,7 @@ async def on_message(message):
     if message.server == None:
         return
     if message.content.lower() == "-r":
-       if "706699378538053643" in [role.id for role in message.author.roles]:
+       if "<@&706699022186053684>" in [role.id for role in message.author.roles]:
            sent_new_message =False
            answer_scores = {
                 "1": 0, 
