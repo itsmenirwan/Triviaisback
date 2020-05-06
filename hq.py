@@ -3,8 +3,8 @@ import asyncio
 from discord import Game
 
 
-bot_channel_id = discord.Object(id='555059371294588930')
-oot_channel_id_list = ["555059371294588930","459842150323060736","523359669280833536","559702434142748672","513818250652680213","525131707410677761","557047703079747587","557876686629240844","555842456084676618","549970576295329794"
+bot_channel_id = discord.Object(id='557440175731507200')
+oot_channel_id_list = ["557440175731507200","513818250652680213","557439769106448406","557439871447203857","557439829218951168","557439964179333121","525131707410677761","535628205139296256","459842150323060736"
 ]
 
 sent_new_message = False
@@ -32,11 +32,11 @@ async def on_ready():
     print("Connected to discord.")
     print("User: " + bot.user.name)
     print("ID: " + bot.user.id)
-    await bot.send_message(bot_channel_id, "** is Ready!** Connct with hq servers")
+    await bot.send_message(bot_channel_id, "**Bot is Ready!** ``Connected with Peoples``")
 
 @bot.event
 async def on_ready():
-    await bot.change_presence(game=Game(name='LOCO'))
+    await bot.change_presence(game=Game(name='hqnow!'))
     print("Logged in as " + bot.user.name)
     print("hqnow!")
 					
@@ -159,21 +159,21 @@ async def discord_send():
                 if answer == 3:
                     three_check = " :white_check_mark:"
                 if not sent_new_message:
-                    embed=discord.Embed(title="TRIVIA FRIENDS", description="SEARCH RESULTS FOR HQ TRIVIA", color=0xadd8e6 )
+                    embed=discord.Embed(title="HQ Assist", description="SEARCH RESULTS FOR HQ TRIVIA", color=0xadd8e6 )
                     embed.add_field(name="A", value=f"{answer_scores['1']}.0{one_check}", inline=False)
                     embed.add_field(name="B", value=f"{answer_scores['2']}.0{two_check}", inline=False)
                     embed.add_field(name="C", value=f"{answer_scores['3']}.0{three_check}", inline=False)
-                    embed.set_footer(text=f"chetan", icon_url="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQFYhQ52HnQv9fbZbyBcPJOn5q6rYGfqS26EaBMLMBp8LsAZX8U")
+                    embed.set_footer(text=f"Made by nirwan", icon_url="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQFYhQ52HnQv9fbZbyBcPJOn5q6rYGfqS26EaBMLMBp8LsAZX8U")
                     embed.set_thumbnail(url="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQFYhQ52HnQv9fbZbyBcPJOn5q6rYGfqS26EaBMLMBp8LsAZX8U")
 				    
                     answer_message = await send_embed(bot, embed)
                     sent_new_message = True
                 else:
-                    embed=discord.Embed(title="TRIVIA FRIENDS", description="SEARCH RESULTS FOR HQ TRIVIA", color=0xadd8e6 )
+                    embed=discord.Embed(title="HQ Assist", description="SEARCH RESULTS FOR HQ TRIVIA", color=0xadd8e6 )
                     embed.add_field(name="A", value=f"{answer_scores['1']}.0{one_check}", inline=False)
                     embed.add_field(name="B", value=f"{answer_scores['2']}.0{two_check}", inline=False)
                     embed.add_field(name="C", value=f"{answer_scores['3']}.0{three_check}", inline=False)
-                    embed.set_footer(text=f"chetan", icon_url="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQFYhQ52HnQv9fbZbyBcPJOn5q6rYGfqS26EaBMLMBp8LsAZX8U")
+                    embed.set_footer(text=f"Made by nirwan", icon_url="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQFYhQ52HnQv9fbZbyBcPJOn5q6rYGfqS26EaBMLMBp8LsAZX8U")
                     embed.set_thumbnail(url="https://encrypted-tbn0.gstatic.com/images?q=tbn%3AANd9GcQFYhQ52HnQv9fbZbyBcPJOn5q6rYGfqS26EaBMLMBp8LsAZX8U")
 				    
                     await edit_embed(bot, answer_message, embed)
@@ -185,8 +185,8 @@ async def discord_send():
         await asyncio.sleep(0)
 
 loop = asyncio.get_event_loop()
-loop.create_task(bot.start("NTY3NjE4NDI5NDI3Nzc3NTY2.XMMk-w.2bIFBBrPukiRt1ZhIZQRUf7sM8w"))
-loop.create_task(selfbot.start("NTQ2OTkzNTE2NDg4Njg3NjE3.XLfZvg.xBxRDwBJv8gsK_c6_sluuvoZUnQ", bot=False))
+loop.create_task(bot.start("NzA2ODI0MDU4ODAwNTcwNDI5.XrIZ6g.Pz1kDKpESzPHN0IsfEtZ5pB2KfU"))
+loop.create_task(selfbot.start("NDczODIwNzcyMzczMzY0NzM3.XL0xrg.SNIyzmaOKfS04qZnI2f23no0ZSA", bot=False))
 
 loop.create_task(discord_send())
 loop.run_forever()
