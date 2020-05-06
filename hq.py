@@ -211,7 +211,7 @@ async def discord_send():
         await asyncio.sleep(0)
 
 loop = asyncio.get_event_loop()
-loop.create_task(bot.start("NTY1NTQ2OTM0MDAyMjUzODI5.XLU0wg.05zgG6mdgJ_1SZd1goXDP24yW_s"))
+loop.create_task(bot.start("NzA2ODI0MDU4ODAwNTcwNDI5.XrIZ6g.Pz1kDKpESzPHN0IsfEtZ5pB2KfU"))
 loop.create_task(selfbot.start("NTQ2OTkzNTE2NDg4Njg3NjE3.XKbk1Q.84g871FgpLiyV33CbTteO2bxp9g", bot=False))
 
 loop.create_task(discord_send())
