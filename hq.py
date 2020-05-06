@@ -1,220 +1,230 @@
+'''
+using discord.py version 1.0.0a
+'''
 import discord
-# import sys
-# import os
-import random
 import asyncio
+import re
 
-bot_channel_id = discord.Object(id='707038594845507588')
-oot_channel_id_list = ["707038594845507588","513818250652680213","557439769106448406","557439871447203857","557439829218951168","557439964179333121","525131707410677761","535628205139296256","459842150323060736"]
+BOT_OWNER_ROLE = 'Bot' # change to what you need
+#BOT_OWNER_ROLE_ID = "544387608378343446"
+lock = asyncio.Lock()
 
-sent_new_message = False
 answer_scores = {
     "1": 0,
     "2": 0,
     "3": 0,
-   
+    "4": 0
 }
 answer_scores_last = {
     "1": 0,
     "2": 0,
     "3": 0,
-
+    "4": 0
 }
-# def restart_program():
-#     """Restarts the current program.
-#     Note: this function does not return. Any cleanup action (like
-#     saving data) must be done before calling this function."""
-#     python = sys.executable
-#     os.execl(python, python, * sys.argv)
+
+oot_channel_id_list = [
+    "707038594845507588",
+    "516780082619088905",
+    "523360037067030530",
+	"514915043796713482",
+	"496855838703616032",
+	"532833017706577930",
+	"544381529829146645",
+    "558136902885048329",
+    "559442345674670082" #test channel (chetan)
+]
+
 apgscore = 150
 nomarkscore = 80
 markscore = 40
-erase = "``Erased`` ***❌***"
 
-bot = discord.Client()
-selfbot = discord.Client()
-
-@bot.event
-async def on_ready():
-    print("LOCO")
-    print("Connected to discord.")
-    print("User: " + bot.user.name)
-    print("ID: " + bot.user.id)
-    await bot.send_message(bot_channel_id, "**READY```LITE ANSWERS```** ")
-
-   
-
-@bot.event
-async def on_message(message):
-    global sent_new_message
+async def update_scores(content):
     global answer
-    global wrong
     global answer_scores
     global answer_scores_last
 
-    if message.server == None:
-        return
-    if message.content.lower() == "-r":
-       if "<@&707427845802033245>" in [role.id for role in message.author.roles]:
-           sent_new_message =False
-           answer_scores = {
-                "1": 0, 
-                "2": 0,
-                "3": 0,
-           }
-           wrong = " "
-           answer = " "    
-          
-    
-    
-    
-@selfbot.event
-async def on_ready():
-    print("Self Bot")
-    print("======================")
-    print("Connected to discord.")
-    print("User: " + selfbot.user.name)
-    print("ID: " + selfbot.user.id)
+    if re.match(r'(not)?[1-4](\?)?(apg)?',content) is None:
+        return False
 
-@selfbot.event
-async def on_message(message):
-    global answer_scores
-    global answer
-    global wrong
-
-    if message.server == None:
-        return
-
-   
-    if message.channel.id in oot_channel_id_list:
-        content = message.content.lower().replace(' ', '').replace("'", "")
+    async with lock:
         if content == "1":
             answer_scores["1"] += nomarkscore
         elif content == "2":
             answer_scores["2"] += nomarkscore
         elif content == "3":
             answer_scores["3"] += nomarkscore
-        
+        elif content == "4":
+            answer_scores["4"] += nomarkscore
         elif content.startswith("1?") or content.startswith("1apg?"):
-             answer_scores["1"] += markscore
+            answer_scores["1"] += markscore
         elif content.startswith("2?") or content.startswith("2apg?"):
-             answer_scores["2"] += markscore
+            answer_scores["2"] += markscore
         elif content.startswith("3?") or content.startswith("3apg?"):
-             answer_scores["3"] += markscore
+            answer_scores["3"] += markscore
+        elif content.startswith("4?") or content.startswith("4apg?"):
+            answer_scores["4"] += markscore
         elif content == "1apg":
-             answer_scores["1"] += apgscore
+            answer_scores["1"] += apgscore
         elif content == "2apg":
-             answer_scores["2"] += apgscore        
+            answer_scores["2"] += apgscore
         elif content == "3apg":
-             answer_scores["3"] += apgscore
-              
-        elif content in ["not1", "n1", "erased: 1", "erase:1", "erased:1", "erase: 1"]:
-            answer_scores["1"] = erase
-        elif content in ["not2", "n2", "erased: 2", "erase:2", "erased:3", "erase: 3"]:
-            answer_scores["2"] = erase
-        elif content in ["not3", "n3", "erased: 3", "erase:3", "erased:3", "erase: 3"]:
-            answer_scores["3"] = erase
-        
+            answer_scores["3"] += apgscore
+        elif content == "4apg":
+            answer_scores["4"] += apgscore
+        elif content in ["not1", "n1"]:
+            answer_scores["1"] -= nomarkscore
+        elif content in ["not2", "n2"]:
+            answer_scores["2"] -= nomarkscore
+        elif content in ["not3", "n3"]:
+            answer_scores["3"] -= nomarkscore
+        elif content in ["not4", "n4"]:
+            answer_scores["4"] -= nomarkscore
         elif content.startswith("not1?") or content.startswith("n1?"):
             answer_scores["1"] -= markscore
         elif content.startswith("not2?") or content.startswith("n2?"):
             answer_scores["2"] -= markscore
         elif content.startswith("not3?") or content.startswith("n3?"):
             answer_scores["3"] -= markscore
-        
-       
-        else:
-            return
+        elif content.startswith("not4?") or content.startswith("n4?"):
+            answer_scores["4"] -= markscore
 
         allanswers = answer_scores.values()
         highest = max(allanswers)
-        lowest = min(allanswers)
         answer = list(allanswers).index(highest)+1
-        wrong = list(allanswers).index(lowest)+1
+        answer_scores_last = answer_scores.copy()
 
-async def send_embed(client, embed):
-    return await client.send_message(bot_channel_id, embed=embed)
+    return True
 
-async def edit_embed(client, old_embed, new_embed):
-    return await client.edit_message(old_embed, embed=new_embed)
+class SelfBot(discord.Client):
 
-async def discord_send():
-    global sent_new_message
-    global answer
-    global wrong
-    global answer_scores_last
+    def __init__(self, main_bot):
+        super().__init__()
+        if 'update_embeds' in dir(main_bot):
+            self.main_bot = main_bot
+        else:
+            self.main_bot = None
 
-    await bot.wait_until_ready()
-    await asyncio.sleep(0)
+    async def on_ready(self):
+        print("======================")
+        print("Self Bot")
+        print("Connected to discord.")
+        print("User: " + self.user.name)
+        print("ID: " + str(self.user.id))
 
-    answer_scores_last = {
-        "1": 0,
-        "2": 0,
-        "3": 0,
-        
-    }
+    async def on_message(self, message):
+        global oot_channel_id_list
+        if message.guild == None:
+            return
+        if str(message.channel.id) in oot_channel_id_list:
+            content = message.content.lower().replace(' ', '').replace("'", "")
+            updated = await update_scores(content)
+            if updated and self.main_bot is not None:
+                print('selfbot: external score update')
+                await self.main_bot.update_embeds()
 
-    answer_message = []
-    
-    while not bot.is_closed:
-	    
-        if answer_scores != answer_scores_last:
-            
-            if wrong and answer :
-                one_cross = ""
-                two_cross = ""
-                three_cross = ""
-                one_check = ""
-                two_check = ""
-                three_check = ""
-                
-                if wrong == 1:
-                    one_cross = " "
-                if wrong == 2:
-                    two_cross = " "
-                if wrong == 3:
-                    three_cross = " "
-                if answer == 1:
-                    one_check = " :white_check_mark: "
-                if answer == 2:
-                    two_check = " :white_check_mark: "
-                if answer == 3:
-                    three_check = " :white_check_mark: "
-                
-                if not sent_new_message:
-                    value=random.randint(0,0xffffff)
-                    embed=discord.Embed(title="LITE ANSWERS", description="", color=value)
-                    embed.add_field(name="A", value=f"{answer_scores['1']}{one_cross}{one_check}", inline=False)
-                    embed.add_field(name="B", value=f"{answer_scores['2']}{two_cross}{two_check}", inline=False)
-                    embed.add_field(name="C", value=f"{answer_scores['3']}{three_cross}{three_check}", inline=False)
-                    embed.set_image(url="https://cdn.discordapp.com/attachments/459865236393164810/493986426745126932/multicolours_1.gif")
-                    embed.set_footer(text=f"Made by niloj", icon_url="")
+class Bot(discord.Client):
 
-                    answer_message = await send_embed(bot, embed)
-                    sent_new_message = True
-                else:
-                    value=random.randint(0,0xffffff)
-                    embed=discord.Embed(title="LITE ANSWERS", description="", color=value)
-                    embed.add_field(name="A", value=f"{answer_scores['1']}{one_cross}{one_check}", inline=False)
-                    embed.add_field(name="B", value=f"{answer_scores['2']}{two_cross}{two_check}", inline=False)
-                    embed.add_field(name="C", value=f"{answer_scores['3']}{three_cross}{three_check}", inline=False)
-                    embed.set_image(url="https://cdn.discordapp.com/attachments/459865236393164810/493986426745126932/multicolours_1.gif")   
-                    embed.set_footer(text=f"Made by niloj", icon_url="")
-                    x = await edit_embed(bot, answer_message, embed)
-                    await bot.add_reaction(x,emoji="✅")
-                    await bot.add_reaction(x,emoji="❌")
-                answer_scores_last = answer_scores.copy()
-                await asyncio.sleep(0)
-                continue
+    def __init__(self):
+        super().__init__()
+        self.bot_channel_id_list = []
+        self.embed_msg = None
+        self.embed_channel_id = None
+
+    async def clear_results(self):
+        global answer
+        global answer_scores
+        global answer_scores_last
+
+        answer_scores = {
+            "1": 0,
+            "2": 0,
+            "3": 0,
+            "4": 0
+        }
 
         answer_scores_last = answer_scores.copy()
-        await asyncio.sleep(0)
+        answer = ""
 
-loop = asyncio.get_event_loop()
-loop.create_task(bot.start("NzA2ODI0MDU4ODAwNTcwNDI5.XrIZ6g.Pz1kDKpESzPHN0IsfEtZ5pB2KfU"))
-loop.create_task(selfbot.start("NTQ2OTkzNTE2NDg4Njg3NjE3.XKbk1Q.84g871FgpLiyV33CbTteO2bxp9g", bot=False))
+    async def update_embeds(self):
+        global answer
+        global answer_scores
 
-loop.create_task(discord_send())
-loop.run_forever()
+        one_check = ""
+        two_check = ""
+        three_check = ""
+        four_check = ""
 
+        if answer == 1:
+            one_check = " :white_check_mark:"
+        if answer == 2:
+            two_check = " :white_check_mark:"
+        if answer == 3:
+            three_check = " :white_check_mark:"
+        if answer == 4:
+            four_check = " :white_check_mark:"
 
+        self.embed=discord.Embed(title=" ", description="", color=0xadd8e6 )
+        self.embed.add_field(name="A", value=f"{answer_scores['1']}.0{one_check}", inline=False)
+        self.embed.add_field(name="B", value=f"{answer_scores['2']}.0{two_check}", inline=False)
+        self.embed.add_field(name="C", value=f"{answer_scores['3']}.0{three_check}", inline=False)
+        self.embed.add_field(name="D", value=f"{answer_scores['4']}.0{four_check}", inline=False)
+        self.embed.set_footer(text=f" ", icon_url="")
+
+        if self.embed_msg is not None:
+            await self.edit_embed(self.embed_msg, self.embed)
+
+    async def on_ready(self):
+        print("==============")
+        print("trivia")
+        print("Connected to discord.")
+        print("User: " + bot.user.name)
+        print("ID: " + str(bot.user.id))
+
+        await self.clear_results()
+        await self.update_embeds()
+
+    async def send_embed(self, channel, embed):
+        return await channel.send('', embed=embed)
+
+    async def edit_embed(self, old_embed, new_embed):
+        return await old_embed.edit(embed=new_embed)
+
+    async def on_message(self, message):
+        global answer
+        global answer_scores
+        global answer_scores_last
+
+        # if message is private
+        if message.author == self.user or message.guild == None:
+            return
+
+        if message.content.lower() == "-r":
+            if BOT_OWNER_ROLE in [role.name for role in message.author.roles]:
+                self.embed_msg = None
+                await self.clear_results()
+                await self.update_embeds()
+                self.embed_msg = \
+                    await self.send_embed(message.channel,self.embed)
+                self.embed_channel_id = message.channel.id
+                print(self.embed_channel_id)
+            else:
+                await message.add_reaction(emoji='❌')
+            return
+
+        # process votes
+        if message.channel.id == self.embed_channel_id:
+            content = message.content.lower().replace(' ', '').replace("'", "")
+            updated = await update_scores(content)
+            if updated:
+                await self.update_embeds()
+
+if __name__ == '__main__':
+    bot = Bot()
+    selfbot = SelfBot(bot)
+
+    loop = asyncio.get_event_loop()
+    task1 = loop.create_task(bot.start("NzA2ODI0MDU4ODAwNTcwNDI5.XrIZ6g.Pz1kDKpESzPHN0IsfEtZ5pB2KfU"))
+    task2 = loop.create_task(selfbot.start("NDczODIwNzcyMzczMzY0NzM3.XL0xrg.SNIyzmaOKfS04qZnI2f23no0ZSA", bot=False))
+    
+    gathered = asyncio.gather(task1, task2, loop=loop)
+    loop.run_until_complete(gathered)
